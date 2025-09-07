@@ -1,0 +1,61 @@
+Шепеля Ярослав Миколайович KH-925a 
+1.Інсталюємо VirtualBox або саму систему linux
+2. Завантажуємо образ Linux or саму систему linux
+2.1 оновлюємо за допомогою команди sudo apt upgrade всі актуальні компоненти системи
+3.за допомогою команди sudo apt install встановлюємо мінімально-необхідні пакети:git, gcc, clang, clang-format, clang-tidy, 
+tree, make, check, cppcheck, valgrind, llvm-cov.
+4.за допомогою команди git clone клонуєм проект, за посиланням від викладача.
+5.за допомогою команди cd "назва склонованого файлу" переходимо до каталогу  цього файлу та прописуємо tree, щоб побачити структуру каталогів в результаті отримуємо:
+.
+├── CMakeLists.txt
+├── lab00
+│   ├── CMakeLists.txt
+│   ├── dist
+│   │   └── main.bin
+│   ├── doc
+│   │   ├── assets
+│   │   │   └── animal-fields.png
+│   │   ├── lab00.docx
+│   │   ├── lab00.md
+│   │   └── lab00.pdf
+│   ├── Doxyfile
+│   ├── Makefile
+│   ├── README.md
+│   └── src
+│       ├── lib.c
+│       ├── lib.h
+│       └── main.c
+├── lab-cpp00
+│   ├── CMakeLists.txt
+│   ├── leaks_suppr.txt
+│   ├── Makefile
+│   ├── README.md
+│   ├── src
+│   │   ├── lib.cpp
+│   │   ├── lib.h
+│   │   └── main.cpp
+│   └── test
+│       └── test.cpp
+├── README.md
+└── sample_test_libcheck
+    └── test.c
+6.в командній строці прописуєм make clean prep compile check
+7.Замінив в коді інформацію про COW на TIGER, в результаті якої тепер при застосуванні make run, в нас замість корова виводиться тигр
+8.компілюємо проект
+9. додаємо ціль all в Makefile та прописуємо до нього clean prep compile check
+10.За допомогою команди "параметр" --version, ми дізнаємось поточну версію написаного параметру, в даному випадку clang and make
+clang=18.1.3
+Make=4.3
+11.за допомогою команди man "параметр" ми можемо використовувати це як справочника по цьому параметру, що в деталях розпише принцип його роботи.
+12 за допомогою команди git diff ми можемо подивитись останні змінни в файлах репозиторія відносно останньої компіляції
+по типу: diff --git a/lab01/Makefile b/lab01/Makefile
+index aedfa28..96bb721 100644
+--- a/lab01/Makefile
++++ b/lab01/Makefile
+@@ -16,3 +16,4 @@ check:
+        clang-format --verbose -dry-run --Werror src/*
+        clang-tidy src/*.c  -checks=-readability-uppercase-literal-suffix,-readability-magic-numbers,-clang-analyzer-deadcode.DeadStores,-clang-analyzer-security.insecureAPI.rand
+        rm -rf src/*.dump
++all: clean prep compile 
+\ No newline at end of file
+
