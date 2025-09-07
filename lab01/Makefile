@@ -16,3 +16,4 @@ check:
 	clang-format --verbose -dry-run --Werror src/*
 	clang-tidy src/*.c  -checks=-readability-uppercase-literal-suffix,-readability-magic-numbers,-clang-analyzer-deadcode.DeadStores,-clang-analyzer-security.insecureAPI.rand
 	rm -rf src/*.dump
+all: clean prep compile 
