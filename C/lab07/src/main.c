@@ -10,6 +10,17 @@ int myfunction(int list[SIZE]) { //Функція для обрахунку су
 printf("сума масива : %d ", sum);// для виведення суми
 return sum;
 }
+void randgen(long min, long max, int number[SIZE]){
+	int i = 0;
+	for (i=0; i<SIZE; i++ ){ //цикл для внесення в масив рандомних значень
+		number[i] = (int)(rand() % (max-min + 1) + min);// (max-min + 1)- наший розмір діапазону, а +min це зміщення діапазону до мінімального значення щоб він не починався з нуля
+	}
+}
+void print(int number[SIZE]){
+	for (int i = 0; i<SIZE; i++){
+	printf("масив[%d] %d   ", i, number[i]);
+	}
+}
 int main(int argc, char *argv[]){
 	srand((unsigned int)time(NULL));// для роботи рандому
 	long min= 1;
@@ -38,9 +49,8 @@ int main(int argc, char *argv[]){
 		}
 	int number[SIZE];//наший масив
 	int i = 0;
-	for (i=0; i<SIZE; i++ ){ //цикл для внесення в масив рандомних значень
-		number[i] = (int)(rand() % (max-min + 1) + min);// (max-min + 1)- наший розмір діапазону, а +min це зміщення діапазону до мінімального значення щоб він не починався з нуля
-	}
+	randgen(min, max, number);
+	print(number);
 	long totalsum = myfunction(number);
 	return 0;
 }
