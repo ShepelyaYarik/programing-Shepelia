@@ -41,4 +41,4 @@ void get_diagonal(int** matrix, size_t size, int* out_array);
  */
 void sort_array(int* array, size_t size);
 
-#endif // LIB_H
+#endif

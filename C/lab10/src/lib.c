@@ -26,7 +26,7 @@
  * @return int** Вказівник на створену матрицю або NULL, якщо пам'ять не вдалося виділити.
  */
 int** create_matrix(size_t size) {
-	// Виділяємо масив вказівників (хребет матриці)
+	// Виділяємо масив вказівників 
     int** matrix = (int**)malloc(size * sizeof(int*));
     if (!matrix) return NULL;
 
@@ -77,10 +77,7 @@ void free_matrix(int** matrix, size_t size) {
  */
 void get_diagonal(int** matrix, size_t size, int* out_array) {
     for (size_t i = 0; i < size; i++) {
-        // Отримуємо значення: *(адреса_рядка + зсув_стовпчика)
         int value = *(*(matrix + i) + i);
-        
-        // Записуємо у вихідний масив
         *(out_array + i) = value;
     }
 }
@@ -99,12 +96,10 @@ void sort_array(int* array, size_t size) {
 
     for (size_t i = 0; i < size - 1; i++) {
         for (size_t j = 0; j < size - i - 1; j++) {
-            // Порівняння сусідніх елементів через вказівники
             int val_curr = *(array + j);
             int val_next = *(array + j + 1);
 
             if (val_curr > val_next) {
-                // Обмін значень (swap)
                 *(array + j) = val_next;
                 *(array + j + 1) = val_curr;
             }

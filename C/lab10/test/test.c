@@ -22,7 +22,6 @@
  */
 START_TEST(test_get_diagonal)
 {
-    // Arrange (Підготовка)
     int** mat = create_matrix(SIZE);
     int* result = (int*)malloc(SIZE * sizeof(int));
     
@@ -30,15 +29,12 @@ START_TEST(test_get_diagonal)
     *(*(mat + 1) + 1) = 20;
     *(*(mat + 2) + 2) = 30;
 
-    // Act (Дія)
     get_diagonal(mat, SIZE, result);
 
-    // Assert (Перевірка)
     ck_assert_int_eq(*(result + 0), 10);
     ck_assert_int_eq(*(result + 1), 20);
     ck_assert_int_eq(*(result + 2), 30);
 
-    // Cleanup (Очищення)
     free_matrix(mat, SIZE);
     free(result);
 }
