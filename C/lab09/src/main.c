@@ -36,6 +36,6 @@ int main(int argc, char *argv[]){
     randgen(min, max, number);
     print(number);
     myfunction(number);
-
+myfunction1(number);
     return 0;
 }

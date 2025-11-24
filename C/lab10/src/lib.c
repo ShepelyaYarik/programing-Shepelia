@@ -82,6 +82,14 @@ void get_diagonal(int** matrix, size_t size, int* out_array) {
     }
 }
 
+void fill_matrix_random(int** matrix, size_t size, int min, int max){
+	for (size_t i=0; i<size; i++){
+		for (size_t j= 0; j<size; j++){
+			int random_val = min + rand()%(max-min+1);
+		*(*(matrix + i) + j) = random_val;
+		}
+	}
+}
 /**
  * @brief Сортує масив цілих чисел за зростанням.
  *

@@ -40,5 +40,6 @@ void get_diagonal(int** matrix, size_t size, int* out_array);
  * @param size Розмір масиву.
  */
 void sort_array(int* array, size_t size);
+void fill_matrix_random(int** matrix, size_t size, int min, int max);
 
 #endif

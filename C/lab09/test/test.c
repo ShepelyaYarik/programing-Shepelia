@@ -11,6 +11,16 @@ START_TEST(test_sum)
     ck_assert_int_eq(actual_sum, expected_sum);
 }
 END_TEST
+START_TEST(test_sum_3)
+{
+    int input_data[SIZE] = { 1, 2, 10 };
+    int expected_sum = 13; 
+
+    int actual_sum = myfunction1(input_data);
+
+    ck_assert_int_eq(actual_sum, expected_sum);
+}
+END_TEST
 
 START_TEST(test_sum_negative)
 {
@@ -41,6 +51,7 @@ int main(void){
 	Suite *s = suite_create("Programing");
 	TCase *tc_core = tcase_create("lab09");
 	tcase_add_test(tc_core, test_sum);
+	tcase_add_test(tc_core, test_sum_3);
 	tcase_add_test(tc_core, test_randgen_range);
 	tcase_add_test(tc_core, test_sum_negative);
 	suite_add_tcase(s, tc_core);
