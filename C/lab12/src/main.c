@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lib.h"
+#include<string.h>
 
 /**
  * @brief Точка входу в програму.
@@ -26,10 +27,7 @@ int main() {
     if (freq == NULL) return 1; 
 
     int total_chars = 0;
-   
-    for (int i = 0; i < 256; i++) {
-        *(freq + i) = 0;
-    }
+   memset(freq, 0, 256*sizeof(int));
 
     printf("Введіть текст (для продовження ctrl+d)\n");
     
@@ -58,7 +56,9 @@ int main() {
     } else {
         printf("\nВи ввели порожній рядок.\n");
     }
-
+	for(int i = 0; i<=(int)strlen(buffer); i++){
+		printf("%c" , buffer[i] );
+	}
     // Звільнення виділеної пам'яті
     free(freq);
     return 0;
