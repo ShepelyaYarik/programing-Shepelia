@@ -26,7 +26,7 @@ int invert_matrix(float *mat, float *inv, int n) {
             if (swap_row == -1) {
                 return 1; 
             }
-            
+            // перестановка рядків 
             for (int j = 0; j < n; j++) {
                 float temp_val = *(mat + i * n + j);
                 *(mat + i * n + j) = *(mat + swap_row * n + j);
