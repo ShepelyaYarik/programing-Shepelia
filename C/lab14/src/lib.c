@@ -70,6 +70,15 @@ long calculate_total_ram(MobilePhone *phones, int count) {
     return total_ram;
 }
 
+MobilePhone* find_max_storage(MobilePhone *phones , int count){
+	 MobilePhone *max_phone = phones ;
+	 for(int i=1; i<count; i++){
+		 if((phones + i)->storage_mb > max_phone->storage_mb){
+			 max_phone = (phones + i);
+		 }
+	 }
+	 return max_phone;
+ }
 void find_non_grandma_push_phones(MobilePhone *phones, int count) {
     printf("\n--- Кнопкові телефони (НЕ бабусяфони) ---\n");
     for (int i = 0; i < count; i++) {

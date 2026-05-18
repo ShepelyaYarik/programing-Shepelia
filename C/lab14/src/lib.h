@@ -123,6 +123,7 @@ void find_non_grandma_push_phones(MobilePhone *phones, int count);
  */
 void find_foldable_phones(MobilePhone *phones, int count);
 
+MobilePhone* find_max_storage(MobilePhone *phones , int count);
 /**
  * @brief Сортує за ram_mb від найменшого до найбільшого
  * * @param phones Покажчик на масив структур.

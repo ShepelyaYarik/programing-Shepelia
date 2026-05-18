@@ -30,12 +30,16 @@ int main(int argc, char *argv[]) {
     read_from_file(argv[1], &phones, &count);
 
     printf("Зчитано телефонів: %d\n", count); // 2. Вивід базової інформації
-    sort_by_ram(phones, count);    
+      
     print_phones(phones, count);
-
-    long total_ram = calculate_total_ram(phones, count);
+	sort_by_ram(phones, count); 
+	
+	printf("Сортування за RAM...\n");
+    print_phones(phones, count);
+	long total_ram = calculate_total_ram(phones, count);
     printf("\nЗагальний об'єм RAM усіх пристроїв: %ld МБ\n", total_ram);
-
+	MobilePhone *best_phone = find_max_storage(phones, count);
+	printf("model;  %s , Storage_MB; %d\n", best_phone->model , best_phone->storage_mb );
     find_non_grandma_push_phones(phones, count);
     find_foldable_phones(phones, count);
 
