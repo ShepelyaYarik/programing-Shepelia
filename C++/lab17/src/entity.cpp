@@ -1,98 +1,75 @@
-/**
- * @file entity.cpp
- * @brief Реалізація методів для сутностей предметної галузі "Мобільний телефон".
- */
-
 #include "entity.h"
+#include <iostream>
 
-std::string osToString(OS os) {
+/**
+ * @brief Конструктор за замовчуванням для класу Phone.
+ */
+Phone::Phone()
+    : isWaterproof(false), isShockproof(false), model("unknown"), ramMb(0), storageMb(0), screenSize{0, 0}, os(OperatingSystem::Android) {
+    std::cout << "[Лог]: Викликано конструктор за замовчуванням для Phone: " << model << std::endl;
+}
+
+/**
+ * @brief Конструктор з аргументами (параметризований).
+ */
+Phone::Phone(bool water, bool shock, const std::string& mod, int ram, int storage, ScreenSize screen, OperatingSystem osType)
+    : isWaterproof(water), isShockproof(shock), model(mod), ramMb(ram), storageMb(storage), screenSize(screen), os(osType) {
+    std::cout << "[Лог]: Викликано конструктор з аргументами для Phone: " << model << std::endl;
+}
+
+/**
+ * @brief Конструктор копіювання класу Phone.
+ */
+Phone::Phone(const Phone& other)
+    : isWaterproof(other.isWaterproof), isShockproof(other.isShockproof), model(other.model), 
+      ramMb(other.ramMb), storageMb(other.storageMb), screenSize(other.screenSize), os(other.os) {
+    std::cout << "[Лог]: Викликано конструктор копіювання для Phone: " << model << std::endl;
+}
+
+/**
+ * @brief Деструктор класу Phone.
+ */
+Phone::~Phone() {
+    std::cout << "[Лог]: Викликано деструктор для Phone: " << model << std::endl;
+}
+
+// --- ГЕТЕРИ ---
+bool Phone::getIsWaterproof() const { return isWaterproof; }
+bool Phone::getIsShockproof() const { return isShockproof; }
+std::string Phone::getModel() const { return model; }
+int Phone::getRamMb() const { return ramMb; }
+int Phone::getStorageMb() const { return storageMb; }
+ScreenSize Phone::getScreenSize() const { return screenSize; }
+OperatingSystem Phone::getOs() const { return os; }
+
+std::string Phone::getOsString() const {
     switch (os) {
-        case OS::Android: return "Android";
-        case OS::IOS: return "IOS";
-        case OS::Symbian: return "Symbian";
-        case OS::WindowsPhone: return "Windows Phone";
-        case OS::None: return "None";
-        default: return "Unknown";
+        case OperatingSystem::Android: return "Android";
+        case OperatingSystem::iOS: return "iOS";
+        case OperatingSystem::Symbian: return "Symbian";
+        case OperatingSystem::WindowsPhone: return "Windows Phone";
+        default: return "Невідома ОС";
     }
 }
 
-MobilePhone::MobilePhone() 
-    : waterproof(false), shockproof(false), model("Unknown"), ramMB(0), storageMB(0), screenSize{0, 0}, os(OS::None) {
-    std::cout << "[LOG] MobilePhone: Конструктор за замовчуванням\n";
-}
+// --- СЕТЕРИ ---
+void Phone::setIsWaterproof(bool water) { isWaterproof = water; }
+void Phone::setIsShockproof(bool shock) { isShockproof = shock; }
+void Phone::setModel(const std::string& mod) { model = mod; }
+void Phone::setRamMb(int ram) { ramMb = ram; }
+void Phone::setStorageMb(int storage) { storageMb = storage; }
+void Phone::setScreenSize(ScreenSize screen) { screenSize = screen; }
+void Phone::setOs(OperatingSystem osType) { os = osType; }
 
-MobilePhone::MobilePhone(bool wp, bool sp, const std::string& mod, int ram, int storage, ScreenSize ss, OS os_val)
-    : waterproof(wp), shockproof(sp), model(mod), ramMB(ram), storageMB(storage), screenSize(ss), os(os_val) {
-    std::cout << "[LOG] MobilePhone: Конструктор з аргументами (" << model << ")\n";
-}
-
-MobilePhone::~MobilePhone() {
-    std::cout << "[LOG] MobilePhone: Деструктор (" << model << ")\n";
-}
-
-bool MobilePhone::isWaterproof() const { return waterproof; }
-bool MobilePhone::isShockproof() const { return shockproof; }
-std::string MobilePhone::getModel() const { return model; }
-int MobilePhone::getRamMB() const { return ramMB; }
-int MobilePhone::getStorageMB() const { return storageMB; }
-ScreenSize MobilePhone::getScreenSize() const { return screenSize; }
-OS MobilePhone::getOS() const { return os; }
-
-void MobilePhone::print() const {
-    std::cout << "Model: " << model 
-              << " | RAM: " << ramMB << "MB | Storage: " << storageMB << "MB"
-              << " | OS: " << osToString(os) 
-              << " | Screen: " << screenSize.width << "x" << screenSize.height 
-              << " | WP: " << (waterproof ? "Yes" : "No")
-              << " | SP: " << (shockproof ? "Yes" : "No") << "\n";
-}
-
-
-ButtonPhone::ButtonPhone() : MobilePhone(), babushkaPhone(false), buttonCount(0) {
-    std::cout << "[LOG] ButtonPhone: Конструктор за замовчуванням\n";
-}
-
-ButtonPhone::ButtonPhone(bool wp, bool sp, const std::string& mod, int ram, int storage, 
-                         ScreenSize ss, OS os_val, bool isBabushka, int btnCount)
-    : MobilePhone(wp, sp, mod, ram, storage, ss, os_val), babushkaPhone(isBabushka), buttonCount(btnCount) {
-    std::cout << "[LOG] ButtonPhone: Конструктор з аргументами\n";
-}
-
-ButtonPhone::~ButtonPhone() {
-    std::cout << "[LOG] ButtonPhone: Деструктор\n";
-}
-
-bool ButtonPhone::isBabushkaPhone() const { return babushkaPhone; }
-int ButtonPhone::getButtonCount() const { return buttonCount; }
-
-void ButtonPhone::print() const {
-    std::cout << "[Кнопковий] ";
-    MobilePhone::print(); 
-    std::cout << "    -> Buttons: " << buttonCount 
-              << " | Babushka-phone: " << (babushkaPhone ? "Yes" : "No") << "\n";
-}
-
-
-FoldablePhone::FoldablePhone() : MobilePhone(), foldsInHalf(false), foldedScreenSize{0,0} {
-    std::cout << "[LOG] FoldablePhone: Конструктор за замовчуванням\n";
-}
-
-FoldablePhone::FoldablePhone(bool wp, bool sp, const std::string& mod, int ram, int storage, 
-                             ScreenSize ss, OS os_val, bool folds, ScreenSize fss)
-    : MobilePhone(wp, sp, mod, ram, storage, ss, os_val), foldsInHalf(folds), foldedScreenSize(fss) {
-    std::cout << "[LOG] FoldablePhone: Конструктор з аргументами\n";
-}
-
-FoldablePhone::~FoldablePhone() {
-    std::cout << "[LOG] FoldablePhone: Деструктор\n";
-}
-
-bool FoldablePhone::getFoldsInHalf() const { return foldsInHalf; }
-ScreenSize FoldablePhone::getFoldedScreenSize() const { return foldedScreenSize; }
-
-void FoldablePhone::print() const {
-    std::cout << "[Складаний] ";
-    MobilePhone::print();
-    std::cout << "    -> Folds: " << (foldsInHalf ? "Yes" : "No") 
-              << " | Folded Screen: " << foldedScreenSize.width << "x" << foldedScreenSize.height << "\n";
+/**
+ * @brief Виводить відформатовані технічні характеристики телефона в консоль.
+ */
+void Phone::print() const {
+    std::cout << "Модель: " << model 
+              << " | ОС: " << getOsString()
+              << " | ОЗУ: " << ramMb << " МБ"
+              << " | Сховище: " << storageMb << " МБ"
+              << " | Екран: " << screenSize.width << "x" << screenSize.height
+              << " | Водостійкість: " << (isWaterproof ? "Так" : "Ні")
+              << " | Ударостійкість: " << (isShockproof ? "Так" : "Ні") << std::endl;
 }

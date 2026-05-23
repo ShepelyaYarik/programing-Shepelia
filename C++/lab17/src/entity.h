@@ -1,173 +1,106 @@
-/**
- * @file entity.h
- * @brief Містить оголошення базового класу MobilePhone та його спадкоємців.
- * * Цей файл реалізує предметну галузь "Мобільний телефон" для індивідуального завдання №18.
- */
-
 #ifndef ENTITY_H
 #define ENTITY_H
 
 #include <string>
-#include <iostream>
 
 /**
- * @brief Структура для зберігання розміру екрану.
+ * @brief Структура, що описує фізичні розміри екрану в пікселях.
  */
 struct ScreenSize {
-    int width;  ///< Ширина екрану в пікселях.
-    int height; ///< Висота екрану в пікселях.
+    int width;  /**< Ширина екрану у пікселях */
+    int height; /**< Висота екрану у пікселях */
 };
 
 /**
- * @brief Перелік можливих операційних систем мобільного телефону.
+ * @brief Перелік (Enum class) доступних операційних систем мобільних телефонів.
  */
-enum class OS { Android, IOS, Symbian, WindowsPhone, None };
+enum class OperatingSystem {
+    Android,      /**< Операційна система Android від Google */
+    iOS,          /**< Операційна система iOS від Apple */
+    Symbian,      /**< Операційна система Symbian (Nokia) */
+    WindowsPhone  /**< Операційна система Windows Phone від Microsoft */
+};
 
 /**
- * @brief Перетворює значення переліку OS у рядкове представлення.
- * @param os Операційна система (enum OS).
- * @return Рядок з назвою ОС.
+ * @class Phone
+ * @brief Клас, що представляє сутність "Мобільний телефон".
+ * * Містить технічні характеристики пристрою, методи доступу до них
+ * (гетери/сетери) та інструменти для виводу інформації на екран.
  */
-std::string osToString(OS os);
-
-
-/**
- * @class MobilePhone
- * @brief Базовий клас, що представляє загальний мобільний телефон.
- * * Містить основні характеристики будь-якого мобільного телефону (захист, пам'ять, екран, ОС).
- */
-class MobilePhone {
+class Phone {
 private:
-    bool waterproof;       ///< Чи є телефон водостійким.
-    bool shockproof;       ///< Чи є телефон ударостійким.
-    std::string model;     ///< Назва моделі телефону.
-    int ramMB;             ///< Об'єм оперативної пам'яті в мегабайтах.
-    int storageMB;         ///< Об'єм внутрішнього сховища в мегабайтах.
-    ScreenSize screenSize; ///< Роздільна здатність екрану.
-    OS os;                 ///< Встановлена операційна система.
+    bool isWaterproof;       /**< Прапорець водостійкості телефона */
+    bool isShockproof;       /**< Прапорець ударостійкості телефона */
+    std::string model;       /**< Назва моделі або повна назва телефона */
+    int ramMb;               /**< Кількість оперативної пам'яті у Мегабайтах */
+    int storageMb;           /**< Розмір вбудованого сховища у Мегабайтах */
+    ScreenSize screenSize;   /**< Структура з розмірами екрану */
+    OperatingSystem os;      /**< Тип операційної системи */
 
 public:
     /**
      * @brief Конструктор за замовчуванням.
-     * Ініціалізує телефон нульовими/стандартними значеннями.
+     * Ініціалізує поля початковими/нульовими значеннями. Логує виклик.
      */
-    MobilePhone();
+    Phone();
 
     /**
-     * @brief Конструктор з параметрами.
-     * @param wp Водостійкість (true/false).
-     * @param sp Ударостійкість (true/false).
+     * @brief Конструктор з аргументами (параметризований).
+     * @param water Флаг водостійкості.
+     * @param shock Флаг ударостійкості.
      * @param mod Назва моделі.
-     * @param ram Об'єм RAM (МБ).
-     * @param storage Об'єм сховища (МБ).
-     * @param ss Розмір екрану (ScreenSize).
-     * @param os_val Операційна система (OS).
+     * @param ram Об'єм ОЗУ в Мб.
+     * @param storage Об'єм вбудованої пам'яті в Мб.
+     * @param screen Структура розміру екрану.
+     * @param osType Тип операційної системи.
      */
-    MobilePhone(bool wp, bool sp, const std::string& mod, int ram, int storage, ScreenSize ss, OS os_val);
+    Phone(bool water, bool shock, const std::string& mod, int ram, int storage, ScreenSize screen, OperatingSystem osType);
+
+    /**
+     * @brief Конструктор копіювання.
+     * Створює дублікат існуючого об'єкта Phone. Логує виклик.
+     * @param other Посилання на об'єкт, який копіюється.
+     */
+    Phone(const Phone& other);
+
+    /**
+     * @brief Деструктор класу Phone.
+     * Звільняє ресурси об'єкта та логує процес знищення.
+     */
+    ~Phone();
+
+    /** @name Гетери (Константні методи доступу) */
+    ///@{
+    bool getIsWaterproof() const;
+    bool getIsShockproof() const;
+    std::string getModel() const;
+    int getRamMb() const;
+    int getStorageMb() const;
+    ScreenSize getScreenSize() const;
+    OperatingSystem getOs() const;
     
     /**
-     * @brief Віртуальний деструктор.
-     * Необхідний для коректного видалення об'єктів-спадкоємців через вказівник на базовий клас.
+     * @brief Отримує текстове представлення операційної системи.
+     * @return Рядок з назвою ОС.
      */
-    virtual ~MobilePhone();
+    std::string getOsString() const;
+    ///@}
 
-    // Гетери
-    /** @return true, якщо телефон водостійкий. */
-    bool isWaterproof() const;
-    /** @return true, якщо телефон ударостійкий. */
-    bool isShockproof() const;
-    /** @return Назва моделі. */
-    std::string getModel() const;
-    /** @return Об'єм оперативної пам'яті в МБ. */
-    int getRamMB() const;
-    /** @return Об'єм внутрішнього сховища в МБ. */
-    int getStorageMB() const;
-    /** @return Розмір екрану. */
-    ScreenSize getScreenSize() const;
-    /** @return Операційна система телефону. */
-    OS getOS() const;
+    /** @name Сетери (Методи модифікації полів) */
+    ///@{
+    void setIsWaterproof(bool water);
+    void setIsShockproof(bool shock);
+    void setModel(const std::string& mod);
+    void setRamMb(int ram);
+    void setStorageMb(int storage);
+    void setScreenSize(ScreenSize screen);
+    void setOs(OperatingSystem osType);
+    ///@}
 
     /**
-     * @brief Виводить інформацію про телефон у стандартний потік виводу.
-     * Віртуальний метод, який перевизначається у спадкоємцях.
+     * @brief Виводит повну технічну інформацію про телефон у консоль.
      */
-    virtual void print() const;
+    void print() const;
 };
 
-/**
- * @class ButtonPhone
- * @brief Клас, що представляє кнопковий телефон. Наслідує MobilePhone.
- */
-class ButtonPhone : public MobilePhone {
-private:
-    bool babushkaPhone; ///< Чи класифікується телефон як "бабусяфон" (великі кнопки, SOS).
-    int buttonCount;    ///< Кількість фізичних кнопок на корпусі.
-
-public:
-    /**
-     * @brief Конструктор за замовчуванням для кнопкового телефону.
-     */
-    ButtonPhone();
-
-    /**
-     * @brief Конструктор з параметрами для кнопкового телефону.
-     * Приймає параметри базового класу та специфічні для кнопкового телефону.
-     * @param isBabushka Чи є це бабусяфоном.
-     * @param btnCount Кількість кнопок.
-     */
-    ButtonPhone(bool wp, bool sp, const std::string& mod, int ram, int storage, 
-                ScreenSize ss, OS os_val, bool isBabushka, int btnCount);
-                
-    /** @brief Деструктор кнопкового телефону. */
-    ~ButtonPhone() override;
-
-    /** @return true, якщо телефон є бабусяфоном. */
-    bool isBabushkaPhone() const;
-    /** @return Кількість фізичних кнопок. */
-    int getButtonCount() const;
-
-    /**
-     * @brief Перевизначений метод виводу інформації для кнопкового телефону.
-     */
-    void print() const override;
-};
-
-
-/**
- * @class FoldablePhone
- * @brief Клас, що представляє сучасний складаний смартфон. Наслідує MobilePhone.
- */
-class FoldablePhone : public MobilePhone {
-private:
-    bool foldsInHalf;            ///< Чи складається екран навпіл.
-    ScreenSize foldedScreenSize; ///< Розмір зовнішнього екрану у складеному стані.
-
-public:
-    /**
-     * @brief Конструктор за замовчуванням для складаного телефону.
-     */
-    FoldablePhone();
-
-    /**
-     * @brief Конструктор з параметрами для складаного телефону.
-     * @param folds Чи складається він навпіл.
-     * @param fss Розмір екрану у складеному стані.
-     */
-    FoldablePhone(bool wp, bool sp, const std::string& mod, int ram, int storage, 
-                  ScreenSize ss, OS os_val, bool folds, ScreenSize fss);
-                  
-    /** @brief Деструктор складаного телефону. */
-    ~FoldablePhone() override;
-
-    /** @return true, якщо телефон складається навпіл. */
-    bool getFoldsInHalf() const;
-    /** @return Розмір зовнішнього (додаткового) екрану. */
-    ScreenSize getFoldedScreenSize() const;
-
-    /**
-     * @brief Перевизначений метод виводу інформації для складаного телефону.
-     */
-    void print() const override;
-};
-
-#endif 
+#endif // ENTITY_H

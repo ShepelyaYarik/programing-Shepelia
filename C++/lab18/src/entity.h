@@ -1,229 +1,188 @@
 /**
  * @file entity.h
- * @brief Оголошення сутностей предметної галузі "Мобільний телефон" та їхніх методів.
+ * @brief Оголошення класу Phone та допоміжних структур для сутності мобільного телефона.
  */
 
 #ifndef ENTITY_H
 #define ENTITY_H
 
 #include <string>
-#include <iostream>
 
 /**
  * @struct ScreenSize
- * @brief Структура для представлення роздільної здатності екрану.
+ * @brief Структура, що описує фізичні розміри екрану в пікселях.
  */
 struct ScreenSize {
-    int width;  ///< Ширина екрану в пікселях.
-    int height; ///< Висота екрану в пікселях.
+    int width;  /**< Ширина екрану у пікселях */
+    int height; /**< Висота екрану у пікселях */
 };
 
 /**
- * @enum OS
- * @brief Перелік операційних систем мобільних телефонів.
+ * @enum OperatingSystem
+ * @brief Перелік (Enum class) доступних операційних систем мобільних телефонів.
  */
-enum class OS { 
-    Android,      ///< Операційна система Android.
-    iOS,          ///< Операційна система iOS.
-    Symbian,      ///< Операційна система Symbian.
-    WindowsPhone, ///< Операційна система Windows Phone.
-    None          ///< Операційна система відсутня.
+enum class OperatingSystem {
+    Android,      /**< Операційна система Android від Google */
+    iOS,          /**< Операційна система iOS від Apple */
+    Symbian,      /**< Операційна система Symbian (Nokia) */
+    WindowsPhone  /**< Операційна система Windows Phone від Microsoft */
 };
 
 /**
- * @brief Перетворює значення переліку OS у рядкове представлення.
- * @param os Значення операційної системи типу OS.
- * @return Рядок (std::string) з назвою ОС.
+ * @class Phone
+ * @brief Клас, що представляє сутність "Мобільний телефон".
+ * * Містить технічні характеристики пристрою, методи доступу до них,
+ * а також інструменти для серіалізації та десеріалізації об'єкта через рядки.
  */
-std::string osToString(OS os);
-
-/**
- * @brief Перетворює рядок із назвою ОС у відповідне значення переліку OS.
- * @param str Рядок із назвою операційної системи.
- * @return Відповідний елемент переліку OS.
- */
-OS stringToOS(const std::string& str);
-
-/**
- * @class MobilePhone
- * @brief Базовий клас для представлення загальних характеристик мобільного телефону.
- */
-class MobilePhone {
-protected:
-    bool waterproof;       ///< Чи є телефон водонепроникним.
-    bool shockproof;       ///< Чи є телефон ударостійким.
-    std::string model;     ///< Назва моделі телефону.
-    int ramMB;             ///< Об'єм оперативної пам'яті в мегабайтах (MB).
-    int storageMB;         ///< Об'єм внутрішньої пам'яті в мегабайтах (MB).
-    ScreenSize screenSize; ///< Роздільна здатність екрану.
-    OS os;                 ///< Операційна система пристрою.
+class Phone {
+private:
+    bool isWaterproof;       /**< Прапорець водостійкості телефона */
+    bool isShockproof;       /**< Прапорець ударостійкості телефона */
+    std::string model;       /**< Назва моделі або повна назва телефона */
+    int ramMb;               /**< Кількість оперативної пам'яті у Мегабайтах */
+    int storageMb;           /**< Розмір вбудованого сховища у Мегабайтах */
+    ScreenSize screenSize;   /**< Структура з розмірами екрану */
+    OperatingSystem os;      /**< Тип операційної системи */
 
 public:
     /**
      * @brief Конструктор за замовчуванням.
-     * Ініціалізує поля стандартними або нульовими значеннями.
+     * Ініціалізує всі поля базовими безпечними значеннями.
      */
-    MobilePhone();
+    Phone();
 
     /**
-     * @brief Конструктор з параметрами.
-     * @param wp Водонепроникність.
-     * @param sp Ударостійкість.
-     * @param mod Модель телефону.
-     * @param ram Об'єм RAM (МБ).
-     * @param storage Об'єм внутрішньої пам'яті (МБ).
-     * @param ss Роздільна здатність екрану.
-     * @param os_val Операційка система.
+     * @brief Параметризований конструктор для ініціалізації об'єкта конкретними даними.
+     * @param water Прапорець водостійкості.
+     * @param shock Прапорець ударостійкості.
+     * @param mod Назва моделі телефона.
+     * @param ram Об'єм оперативної пам'яті (МБ).
+     * @param storage Об'єм вбудованої пам'яті (МБ).
+     * @param screen Роздільна здатність екрану.
+     * @param osType Тип операційної системи.
      */
-    MobilePhone(bool wp, bool sp, const std::string& mod, int ram, int storage, ScreenSize ss, OS os_val);
+    Phone(bool water, bool shock, const std::string& mod, int ram, int storage, ScreenSize screen, OperatingSystem osType);
+    
+    /**
+     * @brief Конструктор копіювання.
+     * Створює дублікат існуючого об'єкта Phone.
+     * @param other Посилання на об'єкт, який копіюється.
+     */
+    Phone(const Phone& other);
+    
+    /**
+     * @brief Деструктор класу Phone.
+     * Звільняє ресурси, зайняті об'єктом.
+     */
+    ~Phone();
+
+    /** @name Гетери (Константні методи доступу) */
+    ///@{
+    /**
+     * @brief Перевіряє, чи є телефон водостійким.
+     * @return true, якщо телефон водостійкий, інакше false.
+     */
+    bool getIsWaterproof() const;
 
     /**
-     * @brief Віртуальний деструктор класу.
+     * @brief Перевіряє, чи є телефон ударостійким.
+     * @return true, if телефон ударостійкий, інакше false.
      */
-    virtual ~MobilePhone();
+    bool getIsShockproof() const;
 
-    /** @return true, якщо телефон водонепроникний, інакше false. */
-    bool isWaterproof() const;
-
-    /** @return true, якщо телефон ударостійкий, інакше false. */
-    bool isShockproof() const;
-
-    /** @return Назва моделі пристрою. */
+    /**
+     * @brief Повертає назву моделі телефона.
+     * @return Рядок із назвою моделі.
+     */
     std::string getModel() const;
 
-    /** @return Об'єм оперативної пам'яті в МБ. */
-    int getRamMB() const;
+    /**
+     * @brief Повертає об'єм оперативної пам'яті.
+     * @return Кількість оперативної пам'яті в МБ.
+     */
+    int getRamMb() const;
 
-    /** @return Об'єм внутрішньої пам'яті в МБ. */
-    int getStorageMB() const;
+    /**
+     * @brief Повертає розмір вбудованого сховища.
+     * @return Розмір сховища в МБ.
+     */
+    int getStorageMb() const;
 
-    /** @return Структура із розмірами екрану. */
+    /**
+     * @brief Повертає габарити екрану телефона.
+     * @return Об'єкт структури ScreenSize.
+     */
     ScreenSize getScreenSize() const;
 
-    /** @return Значення переліку OS. */
-    OS getOS() const;
+    /**
+     * @brief Повертає тип операційної системи як елемент переліку.
+     * @return Значення типу OperatingSystem.
+     */
+    OperatingSystem getOs() const;
 
     /**
-     * @brief Серіалізація об'єкта в рядок.
-     * @return Рядок із даними об'єкта, де поля розділені символом '|'.
+     * @brief Отримує текстове представлення операційної системи.
+     * @return Рядок з назвою ОС (наприклад, "Android" або "iOS").
      */
-    virtual std::string toString() const;
+    std::string getOsString() const;
+    ///@}
+
+    /** @name Сетери (Методи модифікації полів) */
+    ///@{
+    /**
+     * @brief Встановлює прапорець водостійкості.
+     * @param water Значення водостійкості (true/false).
+     */
+    void setIsWaterproof(bool water);
 
     /**
-     * @brief Десеріалізація об'єкта з рядка.
-     * @param data Рядок із записаними через роздільник даними об'єкта.
+     * @brief Встановлює прапорець ударостійкості.
+     * @param shock Значення ударостійкості (true/false).
      */
-    virtual void fromString(const std::string& data);
+    void setIsShockproof(bool shock);
+
+    /**
+     * @brief Змінює модель телефона.
+     * @param mod Рядок з новою назвою моделі.
+     */
+    void setModel(const std::string& mod);
+
+    /**
+     * @brief Встановлює об'єм RAM.
+     * @param ram Кількість Мегабайт оперативної пам'яті.
+     */
+    void setRamMb(int ram);
+
+    /**
+     * @brief Встановлює розмір вбудованого сховища.
+     * @param storage Кількість Мегабайт постійної пам'яті.
+     */
+    void setStorageMb(int storage);
+
+    /**
+     * @brief Змінює роздільну здатність екрану.
+     * @param screen Структура з новими розмірами екрану.
+     */
+    void setScreenSize(ScreenSize screen);
+
+    /**
+     * @brief Змінює операційну систему пристрою.
+     * @param osType Нове значення з переліку OperatingSystem.
+     */
+    void setOs(OperatingSystem osType);
+    ///@}
+
+    /**
+     * @brief Генерує рядок з інформацією про об'єкт для подальшого виводу або збереження.
+     * @return std::string Рядок, що містить усі серіалізовані поля об'єкта через розділювач.
+     */
+    std::string toString() const;
+
+    /**
+     * @brief Заповнює поля об'єкта на базі переданого рядка інформації (десеріалізація).
+     * @param data Рядок із текстовими даними, розділеними крапкою з комою.
+     */
+    void fromString(const std::string& data);
 };
 
-/**
- * @class ButtonPhone
- * @brief Клас для представлення кнопкового мобільного телефону.
- * Наслідує клас MobilePhone.
- */
-class ButtonPhone : public MobilePhone {
-private:
-    bool babushkaPhone; ///< Чи класифікується телефон як "бабусяфон" (великі кнопки, SOS).
-    int buttonCount;    ///< Кількість фізичних кнопок на корпусі.
-
-public:
-    /**
-     * @brief Конструктор за замовчуванням.
-     */
-    ButtonPhone();
-
-    /**
-     * @brief Конструктор з параметрами.
-     * @param wp Водонепроникність.
-     * @param sp Ударостійкість.
-     * @param mod Модель телефону.
-     * @param ram Об'єм RAM (МБ).
-     * @param storage Об'єм внутрішньої пам'яті (МБ).
-     * @param ss Роздільна здатність екрану.
-     * @param os_val Операційна система.
-     * @param isBabushka Флаг "бабусяфона".
-     * @param btnCount Кількість кнопок.
-     */
-    ButtonPhone(bool wp, bool sp, const std::string& mod, int ram, int storage, 
-                ScreenSize ss, OS os_val, bool isBabushka, int btnCount);
-
-    /**
-     * @brief Деструктор кнопкового телефону.
-     */
-    ~ButtonPhone() override;
-
-    /** @return true, якщо це бабусяфон, інакше false. */
-    bool isBabushkaPhone() const;
-
-    /** @return Кількість фізичних кнопок. */
-    int getButtonCount() const;
-
-    /**
-     * @brief Серіалізація кнопкового телефону в рядок з урахуванням специфічних полей.
-     * @return Рядок формату "ButtonPhone|...базові поля...|babushkaPhone|buttonCount".
-     */
-    std::string toString() const override;
-
-    /**
-     * @brief Десеріалізація даних кнопкового телефону з рядка.
-     * @param data Рядок із роздільниками.
-     */
-    void fromString(const std::string& data) override;
-};
-
-/**
- * @class FoldablePhone
- * @brief Клас для представлення складаного смартфона (Foldable).
- * Наслідує клас MobilePhone.
- */
-class FoldablePhone : public MobilePhone {
-private:
-    bool foldsInHalf;            ///< Чи складається гнучкий екран навпіл.
-    ScreenSize foldedScreenSize; ///< Роздільна здатність додаткового зовнішнього екрану.
-
-public:
-    /**
-     * @brief Конструктор за замовчуванням.
-     */
-    FoldablePhone();
-
-    /**
-     * @brief Конструктор з параметрами.
-     * @param wp Водонепроникність.
-     * @param sp Ударостійкість.
-     * @param mod Модель телефону.
-     * @param ram Об'єм RAM (МБ).
-     * @param storage Об'єм внутрішньої пам'яті (МБ).
-     * @param ss Роздільна здатність основного екрану.
-     * @param os_val Операційна система.
-     * @param folds Здатність складатися навпіл.
-     * @param fss Роздільна здатність зовнішнього екрану у складеному стані.
-     */
-    FoldablePhone(bool wp, bool sp, const std::string& mod, int ram, int storage, 
-                  ScreenSize ss, OS os_val, bool folds, ScreenSize fss);
-
-    /**
-     * @brief Деструктор складаного телефону.
-     */
-    ~FoldablePhone() override;
-
-    /** @return true, якщо екран складається навпіл. */
-    bool getFoldsInHalf() const;
-
-    /** @return Роздільна здатність додаткового зовнішнього екрану. */
-    ScreenSize getFoldedScreenSize() const;
-
-    /**
-     * @brief Серіалізація складаного телефону в рядок з урахуванням специфічних полей.
-     * @return Рядок формату "FoldablePhone|...базові поля...|foldsInHalf|width|height".
-     */
-    std::string toString() const override;
-
-    /**
-     * @brief Десеріалізація даних складаного телефону з рядка.
-     * @param data Рядок із роздільниками.
-     */
-    void fromString(const std::string& data) override;
-};
-
-#endif
+#endif // ENTITY_H

@@ -1,47 +1,57 @@
 /**
  * @file main.cpp
- * @brief Демонстраційний файл програми для демонстрації збереження та відновлення списку об'єктів з файлу.
+ * @brief Головний файл програми для демонстрації С++ потоків, серіалізації структур та ООП.
  */
 
 #include "list.h"
 #include <iostream>
 
 using std::cout;
+using std::endl;
 using std::string;
 
 /**
- * @brief Головна функція програми (точка входу).
- * Демонструє створення об'єктів класів-спадкоємців, запис колекції у файл,
- * автоматичне звільнення пам'яті та повторне читання даних.
- * @return Код завершення програми (0 — успішно).
+ * @brief Головна функція (точка входу в програму).
+ * * Демонструє серіалізацію сутності Phone у текстовий рядок, відновлення об'єкта
+ * з рядка, запис списку об'єктів у файл за допомогою файлових потоків та їх читання назад.
+ * @return 0 при успішному завершенні програми.
  */
 int main() {
-    cout << "=== Лабораторна робота 18 (Потоки) ===\n\n";
+    cout << "--- Демонстрація серіалізації та потоків ---" << endl;
+  
+    Phone p1(true, true, "Nokia 3310", 32, 64, {128, 128}, OperatingSystem::Symbian);
+    
+    // Перевірка toString()
+    string serialized = p1.toString();
+    cout << "Серіалізована Nokia: " << serialized << endl;
 
-    string filename = "dist/phones.txt";
+    // Перевірка відтворення об'єкта з рядка
+    Phone p2;
+    p2.fromString(serialized);
+    cout << "Відновлена модель Nokia: " << p2.getModel() << " | RAM: " << p2.getRamMb() << " МБ " << endl;
 
-    // Створюємо та записуємо список у файл всередині окремої області видимості
-    {
-        PhoneList myList;
-        myList.addPhone(new MobilePhone(true, true, "Google Pixel 8", 8192, 128000, {1080, 2400}, OS::Android));
-        myList.addPhone(new FoldablePhone(true, false, "Galaxy Z Flip", 8192, 256000, {1080, 2640}, OS::Android, true, {720, 748}));
-        myList.addPhone(new ButtonPhone(false, false, "Sigma Comfort 50", 8, 16, {128, 160}, OS::None, true, 12));
-        myList.addPhone(new ButtonPhone(false, true, "Nokia 3310", 16, 32, {84, 48}, OS::Symbian, false, 15));
-        
-        cout << "--- Запис у файл: " << filename << " ---\n";
-        myList.writeToFile(filename);
-    } // Тут myList знищується, вся виділена через new пам'ять звільняється автоматично.
+    cout << "\n--- Робота з файловими потоками (Клас-список) ---" << endl;
+    List initialList;
+    initialList.addPhone(p1);
+    initialList.addPhone(Phone(false, false, "iPhone 15 Pro", 6144, 262144, {1179, 2556}, OperatingSystem::iOS), 1);
+    initialList.addPhone(Phone(true, false, "Google Pixel 8", 8192, 131072, {1080, 2400}, OperatingSystem::Android), 0);
 
-    // Читаємо дані з файлу в інший об'єкт-список
-    {
-        PhoneList loadedList;
-        cout << "--- Читання з файлу: " << filename << " ---\n";
-        loadedList.readFromFile(filename);
-        
-        loadedList.printAll();
-        
-        cout << "\nЗагальна RAM пристроїв: " << loadedList.calculateTotalRAM() << " MB\n";
-    }
+    cout << "Початковий список перед збереженням у файл:" << endl;
+    initialList.print();
 
+    string filename = "dist/phones_data.txt";
+    cout << "\nЗбереження списку у '" << filename << "'..." << endl;
+    initialList.writeToFile(filename);
+
+    cout << "Створення другого списку та завантаження даних із файлу..." << endl;
+    List loadedList;
+    loadedList.readFromFile(filename);
+
+    cout << "Вміст завантаженого списку:" << endl;
+    loadedList.print();
+    
+    cout << "\nЗагальний обсяг RAM у завантаженій колекції: " << loadedList.getTotalRam() << " МБ" << endl;
+    cout << "\n--- Кінець роботи програми (Зараз спрацюють деструктори) ---" << endl;
+    
     return 0;
 }

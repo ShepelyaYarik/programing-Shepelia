@@ -1,45 +1,44 @@
 /**
  * @file main.cpp
- * @brief Головний файл програми.
- * * Демонструє створення об'єктів, наповнення колекції та виклик методів згідно
- * з індивідуальним завданням №18 (Мобільний телефон).
+ * @brief Головний файл програми для демонстрації роботи з класами Phone та List.
  */
 
 #include "list.h"
 #include <iostream>
 
 int main() {
-    std::cout << "=== Демонстрація Лабораторної (Завдання 18) ===\n\n";
+    std::cout << "--- Демонстрація роботи конструкторів ---" << std::endl;
+    
+    //  Конструктор за замовчуванням
+    Phone p1; 
+    
+    // Конструктор з аргументами
+    Phone p2(true, true, "Nokia 3310", 32, 64, {128, 128}, OperatingSystem::Symbian);
+    
+    // Конструктор копіювання
+    Phone p3 = p2; 
 
-    {
-        PhoneList myList;
+    std::cout << "\n--- Робота зі списком (List) ---" << std::endl;
+    List phoneList;
+    
+    phoneList.addPhone(p3);
 
-        // Створюємо об'єкти динамічно через new і передаємо вказівники у колекцію
-        
-        // 1. Звичайний кнопковий (не бабусяфон)
-        myList.addPhone(new ButtonPhone(false, true, "Nokia 3310", 16, 32, {84, 48}, OS::Symbian, false, 15));
-        
-        // 2. Бабусяфон
-        myList.addPhone(new ButtonPhone(false, false, "Sigma Comfort 50", 8, 16, {128, 160}, OS::None, true, 12));
-        
-        // 3. Складаний смартфон
-        myList.addPhone(new FoldablePhone(true, false, "Samsung Galaxy Z Flip 5", 8192, 256000, {1080, 2640}, OS::Android, true, {720, 748}));
-        
-        // 4. Звичайний смартфон (базовий клас)
-        myList.addPhone(new MobilePhone(true, true, "Google Pixel 8", 8192, 128000, {1080, 2400}, OS::Android));
-		std::cout << "\n=== Видаляємо телефон під індексом 1 (Samsung Z Flip) ===\n";
-		myList.removePhone(3);
-        // Демонстрація вмісту
-        myList.printAll();
+    phoneList.addPhone(Phone(false, false, "iPhone 15", 6144, 131072, {1179, 2556}, OperatingSystem::iOS), 1);
 
-        // Тестування специфічних методів завдання
-        std::cout << "\n1. Загальний об'єм RAM усіх пристроїв: " << myList.calculateTotalRAM() << " MB\n";
-        
-        myList.printNonBabushkaButtonPhones(); // Очікується вивід Nokia 3310
-        myList.printFoldablePhones();          // Очікується вивід Z Flip 5
+    phoneList.addPhone(Phone(true, false, "Google Pixel 8", 8192, 131072, {1080, 2400}, OperatingSystem::Android), 0);
 
-        std::cout << "\n--- Очищення пам'яті (вихід з області видимості) ---\n";
-    } // Деструктор PhoneList автоматично звільнить пам'ять
+    std::cout << "\nПоточний вміст списку:" << std::endl;
+    phoneList.print();
+	phoneList.getPhone(0).setStorageMb(256000); // сеттер
+	std::cout << "\nЗбільшили вдвічі розмір сховища за індексом 0 :  " << phoneList.getPhone(0).getModel()  << " "<< phoneList.getPhone(0).getStorageMb() << "Mb" << std::endl; 
+    std::cout << "\nЗагальна оперативна пам'ять у колекції: " << phoneList.getTotalRam() << " МБ" << std::endl;
 
+    std::cout << "\nВидалення елемента за індексом 1..." << std::endl;
+    phoneList.removePhone(1);
+    
+    std::cout << "\nВміст списку після видалення:" << std::endl;
+    phoneList.print();
+
+    std::cout << "\n--- Завершення програми (тут спрацюють деструктори) ---" << std::endl;
     return 0;
 }

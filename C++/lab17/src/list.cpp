@@ -1,113 +1,117 @@
-/**
- * @file list.cpp
- * @brief Реалізація логіки керування колекцією телефонів.
- * * Відповідає за виділення/звільнення динамічної пам'яті, додавання/видалення 
- * елементів та виконання завдань з індивідуального варіанту №18.
- */
-
 #include "list.h"
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
 
-PhoneList::PhoneList() : count(0), capacity(2) {
-    phones = new MobilePhone*[capacity]; // Виділяємо пам'ять під масив вказівників
-    std::cout << "[LOG] PhoneList: Створено список\n";
+/**
+ * @brief Конструктор за замовчуванням класу List.
+ */
+List::List() : data(nullptr), size(0) {}
+
+/**
+ * @brief Деструктор класу List з повним очищенням купи.
+ */
+List::~List() {
+    for (size_t i = 0; i < size; ++i) {
+        delete data[i];
+    }
+    delete[] data;
 }
 
-PhoneList::~PhoneList() {
-    // Важливо: спочатку видаляємо самі об'єкти, на які вказують елементи масиву
-    for (size_t i = 0; i < count; ++i) {
-        delete phones[i]; 
+/**
+ * @brief Додає новий телефон у масив на вказану позицію.
+ */
+void List::addPhone(const Phone& phone, size_t pos) {
+    if (pos > size) {
+        pos = size;
     }
-    // Потім видаляємо сам масив вказівників
-    delete[] phones;
-    std::cout << "[LOG] PhoneList: Знищено список та звільнено пам'ять об'єктів\n";
+
+    Phone** newData = new Phone*[size + 1];
+
+    for (size_t i = 0; i < pos; ++i) {
+        newData[i] = data[i];
+    }
+
+    newData[pos] = new Phone(phone);
+
+    for (size_t i = pos; i < size; ++i) {
+        newData[i + 1] = data[i];
+    }
+
+    delete[] data;
+    data = newData;
+    ++size;
 }
 
-void PhoneList::resize() {
-    capacity *= 2; // Збільшуємо місткість удвічі
-    MobilePhone** newPhones = new MobilePhone*[capacity];
-    
-    // Копіюємо існуючі вказівники у новий масив
-    for (size_t i = 0; i < count; ++i) {
-        newPhones[i] = phones[i];
+/**
+ * @brief Видаляє телефон з колекції за його індексом.
+ */
+void List::removePhone(size_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Індекс за межами масиву");
     }
-    
-    delete[] phones; // Звільняємо стару ділянку пам'яті масиву
-    phones = newPhones; // Перенаправляємо вказівник на новий масив
+
+    delete data[index];
+
+    if (size == 1) {
+        delete[] data;
+        data = nullptr;
+        size = 0;
+        return;
+    }
+
+    Phone** newData = new Phone*[size - 1];
+
+    for (size_t i = 0; i < index; ++i) {
+        newData[i] = data[i];
+    }
+    for (size_t i = index + 1; i < size; ++i) {
+        newData[i - 1] = data[i];
+    }
+
+    delete[] data;
+    data = newData;
+    --size;
 }
 
-void PhoneList::addPhone(MobilePhone* phone, size_t pos) {
-    if (count == capacity) {
-        resize();
+Phone& List::getPhone(size_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Індекс за межами масиву");
     }
-    if (pos > count) {
-        pos = count; // Запобігаємо виходу за межі (додаємо в кінець)
-    }
-    
-    // Зсуваємо елементи вправо, щоб звільнити місце на позиції pos
-    for (size_t i = count; i > pos; --i) {
-        phones[i] = phones[i - 1];
-    }
-    
-    phones[pos] = phone;
-    count++;
+    return *data[index];
 }
 
-void PhoneList::removePhone(size_t index) {
-    if (index >= count) throw std::out_of_range("Index out of bounds");
-    
-    delete phones[index]; // Звільняємо пам'ять самого об'єкта телефону
-    
-    // Зсуваємо елементи вліво, затираючи "дірку" від видаленого вказівника
-    for (size_t i = index; i < count - 1; ++i) {
-        phones[i] = phones[i + 1];
+const Phone& List::getPhone(size_t index) const {
+    if (index >= size) {
+        throw std::out_of_range("Індекс за межами масиву");
     }
-    count--;
+    return *data[index];
 }
 
-void PhoneList::printAll() const {
-    std::cout << "\n--- Усі телефони в колекції ---\n";
-    for (size_t i = 0; i < count; ++i) {
+size_t List::getSize() const {
+    return size;
+}
+
+/**
+ * @brief Виводить увесь список телефонів у консоль.
+ */
+void List::print() const {
+    if (size == 0) {
+        std::cout << "Список порожній." << std::endl;
+        return;
+    }
+    for (size_t i = 0; i < size; ++i) {
         std::cout << "[" << i << "] ";
-        // Завдяки поліморфізму (virtual) викличеться print() відповідного спадкоємця
-        phones[i]->print(); 
+        data[i]->print();
     }
-    std::cout << "-------------------------------\n";
 }
 
-int PhoneList::calculateTotalRAM() const {
-    int totalRAM = 0;
-    for (size_t i = 0; i < count; ++i) {
-        totalRAM += phones[i]->getRamMB();
+/**
+ * @brief Розраховує загальний об'єм ОЗУ.
+ */
+int List::getTotalRam() const {
+    int totalRam = 0;
+    for (size_t i = 0; i < size; ++i) {
+        totalRam += data[i]->getRamMb();
     }
-    return totalRAM;
-}
-
-void PhoneList::printNonBabushkaButtonPhones() const {
-    std::cout << "\n--- Кнопкові телефони (НЕ бабусяфони) ---\n";
-    bool found = false;
-    for (size_t i = 0; i < count; ++i) {
-        // dynamic_cast поверне nullptr, якщо об'єкт НЕ є ButtonPhone
-        ButtonPhone* bp = dynamic_cast<ButtonPhone*>(phones[i]);
-        if (bp != nullptr && !bp->isBabushkaPhone()) {
-            bp->print();
-            found = true;
-        }
-    }
-    if (!found) std::cout << "Таких телефонів не знайдено.\n";
-}
-
-void PhoneList::printFoldablePhones() const {
-    std::cout << "\n--- Складані телефони ---\n";
-    bool found = false;
-    for (size_t i = 0; i < count; ++i) {
-        // dynamic_cast перевіряє, чи є об'єкт FoldablePhone
-        FoldablePhone* fp = dynamic_cast<FoldablePhone*>(phones[i]);
-        if (fp != nullptr) {
-            fp->print();
-            found = true;
-        }
-    }
-    if (!found) std::cout << "Таких телефонів не знайдено.\n";
+    return totalRam;
 }

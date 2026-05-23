@@ -1,6 +1,6 @@
 ## Common Project info
 PROJECT_NAME = "Лабораторна робота 18"
-PROJECT_BRIEF = "Об'єктно-орієнтоване програмування. Потоки
+PROJECT_BRIEF = "Об'єктно-орієнтоване програмування. Потоки"
 PROJECT_NUMBER = 0.1
 
 ## output options

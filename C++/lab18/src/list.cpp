@@ -1,130 +1,169 @@
 /**
  * @file list.cpp
- * @brief Реалізація методів класу колекції PhoneList, включаючи файлові потоки введення/виведення.
+ * @brief Реалізація методів класу-списку List для управління масивом телефонів та файлових потоків.
  */
 
 #include "list.h"
-#include <stdexcept>
 #include <iostream>
 #include <fstream>
-#include <sstream>
+#include <stdexcept>
 
 using std::cout;
+using std::endl;
 using std::string;
+using std::ifstream;
+using std::ofstream;
 
-PhoneList::PhoneList() : count(0), capacity(2) {
-    phones = new MobilePhone*[capacity];
-}
+List::List() : data(nullptr), size(0) {}
 
-PhoneList::~PhoneList() {
+List::~List() {
     clear();
-    delete[] phones;
 }
 
-void PhoneList::clear() {
-    for (size_t i = 0; i < count; ++i) {
-        delete phones[i]; 
-    }
-    count = 0;
-}
-
-void PhoneList::resize() {
-    capacity *= 2;
-    MobilePhone** newPhones = new MobilePhone*[capacity];
-    for (size_t i = 0; i < count; ++i) {
-        newPhones[i] = phones[i];
-    }
-    delete[] phones;
-    phones = newPhones;
-}
-
-void PhoneList::addPhone(MobilePhone* phone, size_t pos) {
-    if (count == capacity) resize();
-    if (pos > count) pos = count;
-    for (size_t i = count; i > pos; --i) {
-        phones[i] = phones[i - 1];
-    }
-    phones[pos] = phone;
-    count++;
-}
-
-void PhoneList::removePhone(size_t index) {
-    if (index >= count) throw std::out_of_range("Index out of bounds");
-    delete phones[index];
-    for (size_t i = index; i < count - 1; ++i) {
-        phones[i] = phones[i + 1];
-    }
-    count--;
-}
-
-void PhoneList::printAll() const {
-    cout << "\n--- Всі телефони у колекції ---\n";
-    for (size_t i = 0; i < count; ++i) {
-        cout << "[" << i << "] " << phones[i]->toString() << "\n";
-    }
-}
-
-int PhoneList::calculateTotalRAM() const {
-    int totalRAM = 0;
-    for (size_t i = 0; i < count; ++i) {
-        totalRAM += phones[i]->getRamMB();
-    }
-    return totalRAM;
-}
-
-void PhoneList::printNonBabushkaButtonPhones() const {
-    cout << "\n--- Кнопкові (НЕ бабусяфони) ---\n";
-    for (size_t i = 0; i < count; ++i) {
-        ButtonPhone* bp = dynamic_cast<ButtonPhone*>(phones[i]);
-        if (bp != nullptr && !bp->isBabushkaPhone()) {
-            cout << bp->toString() << "\n";
+/**
+ * @brief Очищує пам'ять. Послідовно видаляє об'єкти Phone із купи,
+ * після чого видаляє сам масив покажчиків. Скидає розмір в 0.
+ */
+void List::clear() {
+    if (data != nullptr) {
+        for (size_t i = 0; i < size; ++i) {
+            delete data[i];
         }
+        delete[] data;
+        data = nullptr;
+    }
+    size = 0;
+}
+
+/**
+ * @brief Збільшує масив на 1 елемент та вставляє копію телефона на обрану позицію.
+ */
+void List::addPhone(const Phone& phone, size_t pos) {
+    if (pos > size) {
+        pos = size;
+    }
+
+    Phone** newData = new Phone*[size + 1];
+
+    for (size_t i = 0; i < pos; ++i) {
+        newData[i] = data[i];
+    }
+
+    newData[pos] = new Phone(phone);
+
+    for (size_t i = pos; i < size; ++i) {
+        newData[i + 1] = data[i];
+    }
+
+    delete[] data;
+    data = newData;
+    ++size;
+}
+
+/**
+ * @brief Зменшує розмір динамічного масиву та видаляє об'єкт з пам'яті за індексом.
+ */
+void List::removePhone(size_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Індекс виходить за межі масиву");
+    }
+
+    delete data[index];
+
+    if (size == 1) {
+        delete[] data;
+        data = nullptr;
+        size = 0;
+        return;
+    }
+
+    Phone** newData = new Phone*[size - 1];
+
+    for (size_t i = 0; i < index; ++i) {
+        newData[i] = data[i];
+    }
+    for (size_t i = index + 1; i < size; ++i) {
+        newData[i - 1] = data[i];
+    }
+
+    delete[] data;
+    data = newData;
+    --size;
+}
+
+Phone& List::getPhone(size_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Індекс виходить за межі масиву");
+    }
+    return *data[index];
+}
+
+const Phone& List::getPhone(size_t index) const {
+    if (index >= size) {
+        throw std::out_of_range("Індекс виходить за межі масиву");
+    }
+    return *data[index];
+}
+
+size_t List::getSize() const {
+    return size;
+}
+
+void List::print() const {
+    if (size == 0) {
+        cout << "Список порожній." << endl;
+        return;
+    }
+    for (size_t i = 0; i < size; ++i) {
+        cout << "[" << i << "] Рядок серіалізації: " << data[i]->toString() << endl;
     }
 }
 
-void PhoneList::printFoldablePhones() const {
-    cout << "\n--- Складані телефони ---\n";
-    for (size_t i = 0; i < count; ++i) {
-        FoldablePhone* fp = dynamic_cast<FoldablePhone*>(phones[i]);
-        if (fp != nullptr) {
-            cout << fp->toString() << "\n";
-        }
+int List::getTotalRam() const {
+    int totalRam = 0;
+    for (size_t i = 0; i < size; ++i) {
+        totalRam += data[i]->getRamMb();
     }
+    return totalRam;
 }
 
-void PhoneList::writeToFile(string& fileName) {
-    std::ofstream outFile(fileName);
-    if (!outFile.is_open()) throw std::runtime_error("Cannot open file for writing");
-    
-    for (size_t i = 0; i < count; ++i) {
-        outFile << phones[i]->toString() << "\n";
-    }
-    outFile.close();
-}
+// --- ФАЙЛОВІ ПОТОКИ ---
 
-void PhoneList::readFromFile(string& fileName) {
-    std::ifstream inFile(fileName);
-    if (!inFile.is_open()) throw std::runtime_error("Cannot open file for reading");
-    
-    clear(); // Попереднє очищення пам'яті за умовою
-    
+/**
+ * @brief Відкриває файл через ifstream, очищує поточну пам'ять списку
+ * та створює об'єкти на базі зчитаних рядків (із новим розділювачем '|').
+ */
+void List::readFromFile(const string& fileName) {
+    clear(); 
+
+    ifstream file(fileName);
+    if (!file.is_open()) {
+        throw std::runtime_error("Не вдалося відкрити файл для читання: " + fileName);
+    }
+
     string line;
-    while (std::getline(inFile, line)) {
+    while (std::getline(file, line)) {
         if (line.empty()) continue;
+        Phone tempPhone;
+        tempPhone.fromString(line);
         
-        std::stringstream ss(line);
-        string type;
-        std::getline(ss, type, '|');
-        
-        MobilePhone* phone = nullptr;
-        if (type == "MobilePhone") phone = new MobilePhone();
-        else if (type == "ButtonPhone") phone = new ButtonPhone();
-        else if (type == "FoldablePhone") phone = new FoldablePhone();
-        
-        if (phone) {
-            phone->fromString(line);
-            addPhone(phone, count); // Додаємо в кінець списку
-        }
+        size_t currentSize = this->size; 
+        addPhone(tempPhone, currentSize);
     }
-    inFile.close();
+    file.close();
+}
+
+/**
+ * @brief Відкриває файл через ofstream та записує туди результат роботи toString() з рискою '|'.
+ */
+void List::writeToFile(const string& fileName) {
+    ofstream file(fileName);
+    if (!file.is_open()) {
+        throw std::runtime_error("Не вдалося відкрити файл для запису: " + fileName);
+    }
+
+    for (size_t i = 0; i < size; ++i) {
+        file << data[i]->toString() << "\n";
+    }
+    file.close();
 }

@@ -1,135 +1,131 @@
 /**
  * @file entity.cpp
- * @brief Реалізація методів класів MobilePhone, ButtonPhone, FoldablePhone та функцій перетворення ОС.
+ * @brief Реалізація методів класу Phone (конструктори, гетери, сетери, серіалізація).
  */
 
 #include "entity.h"
+#include <iostream>
 #include <sstream>
 
+using std::cout;
+using std::endl;
 using std::string;
 using std::stringstream;
 
-string osToString(OS os) {
+/**
+ * @brief Конструктор за замовчуванням.
+ * Заповнює поля початковими значеннями та виводить лог-повідомлення.
+ */
+Phone::Phone()
+    : isWaterproof(false), isShockproof(false), model("Unknown"), ramMb(0), storageMb(0), screenSize{0, 0}, os(OperatingSystem::Android) {
+    cout << "[Лог]: Викликано конструктор за замовчуванням для Phone: " << model << endl;
+}
+
+/**
+ * @brief Параметризований конструктор.
+ * Створює об'єкт Phone із заданими технічними характеристиками.
+ */
+Phone::Phone(bool water, bool shock, const string& mod, int ram, int storage, ScreenSize screen, OperatingSystem osType)
+    : isWaterproof(water), isShockproof(shock), model(mod), ramMb(ram), storageMb(storage), screenSize(screen), os(osType) {
+    cout << "[Лог]: Викликано параметризований конструктор для Phone: " << model << endl;
+}
+
+/**
+ * @brief Конструктор копіювання.
+ * Створює точну копію іншого об'єкта Phone в пам'яті.
+ */
+Phone::Phone(const Phone& other)
+    : isWaterproof(other.isWaterproof), isShockproof(other.isShockproof), model(other.model), 
+      ramMb(other.ramMb), storageMb(other.storageMb), screenSize(other.screenSize), os(other.os) {
+    cout << "[Лог]: Викликано конструктор копіювання для Phone: " << model << endl;
+}
+
+/**
+ * @brief Деструктор класу. Логує процес видалення об'єкта з пам'яті.
+ */
+Phone::~Phone() {
+    cout << "[Лог]: Викликано деструктор для Phone: " << model << endl;
+}
+
+// --- ГЕТЕРИ / СЕТЕРИ ---
+
+bool Phone::getIsWaterproof() const { return isWaterproof; }
+bool Phone::getIsShockproof() const { return isShockproof; }
+string Phone::getModel() const { return model; }
+int Phone::getRamMb() const { return ramMb; }
+int Phone::getStorageMb() const { return storageMb; }
+ScreenSize Phone::getScreenSize() const { return screenSize; }
+OperatingSystem Phone::getOs() const { return os; }
+
+/**
+ * @brief Повертає текстову назву ОС на основі значення enum.
+ */
+string Phone::getOsString() const {
     switch (os) {
-        case OS::Android: return "Android";
-        case OS::iOS: return "iOS";
-        case OS::Symbian: return "Symbian";
-        case OS::WindowsPhone: return "WindowsPhone";
-        default: return "None";
+        case OperatingSystem::Android: return "Android";
+        case OperatingSystem::iOS: return "iOS";
+        case OperatingSystem::Symbian: return "Symbian";
+        case OperatingSystem::WindowsPhone: return "Windows Phone";
+        default: return "Невідома ОС";
     }
 }
 
-OS stringToOS(const string& str) {
-    if (str == "Android") return OS::Android;
-    if (str == "iOS") return OS::iOS;
-    if (str == "Symbian") return OS::Symbian;
-    if (str == "WindowsPhone") return OS::WindowsPhone;
-    return OS::None;
-}
+void Phone::setIsWaterproof(bool water) { isWaterproof = water; }
+void Phone::setIsShockproof(bool shock) { isShockproof = shock; }
+void Phone::setModel(const string& mod) { model = mod; }
+void Phone::setRamMb(int ram) { ramMb = ram; }
+void Phone::setStorageMb(int storage) { storageMb = storage; }
+void Phone::setScreenSize(ScreenSize screen) { screenSize = screen; }
+void Phone::setOs(OperatingSystem osType) { os = osType; }
 
-// === Реалізація MobilePhone ===
+// --- МЕТОДИ ПОТОКІВ ---
 
-MobilePhone::MobilePhone() 
-    : waterproof(false), shockproof(false), model("Unknown"), ramMB(0), storageMB(0), screenSize{0, 0}, os(OS::None) {}
-
-MobilePhone::MobilePhone(bool wp, bool sp, const string& mod, int ram, int storage, ScreenSize ss, OS os_val)
-    : waterproof(wp), shockproof(sp), model(mod), ramMB(ram), storageMB(storage), screenSize(ss), os(os_val) {}
-
-MobilePhone::~MobilePhone() {}
-
-bool MobilePhone::isWaterproof() const { return waterproof; }
-bool MobilePhone::isShockproof() const { return shockproof; }
-string MobilePhone::getModel() const { return model; }
-int MobilePhone::getRamMB() const { return ramMB; }
-int MobilePhone::getStorageMB() const { return storageMB; }
-ScreenSize MobilePhone::getScreenSize() const { return screenSize; }
-OS MobilePhone::getOS() const { return os; }
-
-string MobilePhone::toString() const {
+/**
+ * @brief Збирає дані всіх полів об'єкта Phone у форматний рядок за допомогою stringstream.
+ * Розділювач — символ '|'.
+ */
+string Phone::toString() const {
     stringstream ss;
-    ss << "MobilePhone|" << waterproof << "|" << shockproof << "|" << model << "|" 
-       << ramMB << "|" << storageMB << "|" << screenSize.width << "|" << screenSize.height << "|" << osToString(os);
+    ss << model << "|"
+       << isWaterproof << "|"
+       << isShockproof << "|"
+       << ramMb << "|"
+       << storageMb << "|"
+       << screenSize.width << "|"
+       << screenSize.height << "|"
+       << static_cast<int>(os);
     return ss.str();
 }
 
-void MobilePhone::fromString(const string& data) {
-    stringstream ss(data);
-    string token;
+/**
+ * @brief Зчитує рядок та розбирає його на окремі змінні за допомогою stringstream і getline з розділювачем '|'.
+ */
+void Phone::fromString(const string& data) {
+    if (data.empty()) return;
     
-    std::getline(ss, token, '|'); // Пропускаємо ідентифікатор типу
-    std::getline(ss, token, '|'); waterproof = (token == "1");
-    std::getline(ss, token, '|'); shockproof = (token == "1");
+    stringstream ss(data);
+    string tempStr;
+    
     std::getline(ss, model, '|');
-    std::getline(ss, token, '|'); ramMB = std::stoi(token);
-    std::getline(ss, token, '|'); storageMB = std::stoi(token);
-    std::getline(ss, token, '|'); screenSize.width = std::stoi(token);
-    std::getline(ss, token, '|'); screenSize.height = std::stoi(token);
-    std::getline(ss, token, '|'); os = stringToOS(token);
-}
-
-// === Реалізація ButtonPhone ===
-
-ButtonPhone::ButtonPhone() : MobilePhone(), babushkaPhone(false), buttonCount(0) {}
-
-ButtonPhone::ButtonPhone(bool wp, bool sp, const string& mod, int ram, int storage, 
-                         ScreenSize ss, OS os_val, bool isBabushka, int btnCount)
-    : MobilePhone(wp, sp, mod, ram, storage, ss, os_val), babushkaPhone(isBabushka), buttonCount(btnCount) {}
-
-ButtonPhone::~ButtonPhone() {}
-
-bool ButtonPhone::isBabushkaPhone() const { return babushkaPhone; }
-int ButtonPhone::getButtonCount() const { return buttonCount; }
-
-string ButtonPhone::toString() const {
-    stringstream ss;
-    ss << "ButtonPhone|" << waterproof << "|" << shockproof << "|" << model << "|" 
-       << ramMB << "|" << storageMB << "|" << screenSize.width << "|" << screenSize.height << "|" << osToString(os) 
-       << "|" << babushkaPhone << "|" << buttonCount;
-    return ss.str();
-}
-
-void ButtonPhone::fromString(const string& data) {
-    MobilePhone::fromString(data); // Заповнюємо базові поля
-    stringstream ss(data);
-    string token;
-    // Пропускаємо перші 9 полей, які вже оброблені базовим класом
-    for(int i = 0; i < 9; ++i) {
-        std::getline(ss, token, '|');
-    }
-    std::getline(ss, token, '|'); babushkaPhone = (token == "1");
-    std::getline(ss, token, '|'); buttonCount = std::stoi(token);
-}
-
-// === Реалізація FoldablePhone ===
-
-FoldablePhone::FoldablePhone() : MobilePhone(), foldsInHalf(false), foldedScreenSize{0,0} {}
-
-FoldablePhone::FoldablePhone(bool wp, bool sp, const string& mod, int ram, int storage, 
-                             ScreenSize ss, OS os_val, bool folds, ScreenSize fss)
-    : MobilePhone(wp, sp, mod, ram, storage, ss, os_val), foldsInHalf(folds), foldedScreenSize(fss) {}
-
-FoldablePhone::~FoldablePhone() {}
-
-bool FoldablePhone::getFoldsInHalf() const { return foldsInHalf; }
-ScreenSize FoldablePhone::getFoldedScreenSize() const { return foldedScreenSize; }
-
-string FoldablePhone::toString() const {
-    stringstream ss;
-    ss << "FoldablePhone|" << waterproof << "|" << shockproof << "|" << model << "|" 
-       << ramMB << "|" << storageMB << "|" << screenSize.width << "|" << screenSize.height << "|" << osToString(os) 
-       << "|" << foldsInHalf << "|" << foldedScreenSize.width << "|" << foldedScreenSize.height;
-    return ss.str();
-}
-
-void FoldablePhone::fromString(const string& data) {
-    MobilePhone::fromString(data); // Заповнюємо базові поля
-    stringstream ss(data);
-    string token;
-    // Пропускаємо перші 9 полей
-    for(int i = 0; i < 9; ++i) {
-        std::getline(ss, token, '|');
-    }
-    std::getline(ss, token, '|'); foldsInHalf = (token == "1");
-    std::getline(ss, token, '|'); foldedScreenSize.width = std::stoi(token);
-    std::getline(ss, token, '|'); foldedScreenSize.height = std::stoi(token);
+    
+    std::getline(ss, tempStr, '|');
+    isWaterproof = (tempStr == "1");
+    
+    std::getline(ss, tempStr, '|');
+    isShockproof = (tempStr == "1");
+    
+    std::getline(ss, tempStr, '|');
+    ramMb = std::stoi(tempStr);
+    
+    std::getline(ss, tempStr, '|');
+    storageMb = std::stoi(tempStr);
+    
+    std::getline(ss, tempStr, '|');
+    screenSize.width = std::stoi(tempStr);
+    
+    std::getline(ss, tempStr, '|');
+    screenSize.height = std::stoi(tempStr);
+    
+    std::getline(ss, tempStr, '|');
+    os = static_cast<OperatingSystem>(std::stoi(tempStr));
 }
