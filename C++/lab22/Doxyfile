@@ -1,6 +1,7 @@
 ## Common Project info
-PROJECT_NAME = "Лабораторна робота 17"
-PROJECT_BRIEF = "ООП. Вступ до ООП"
+PROJECT_NAME = "Лабораторна робота 22"
+PROJECT_BRIEF = "ООП. STL. Вступ до Стандартної бібліотеки
+шаблонів"
 PROJECT_NUMBER = 0.1
 
 ## output options
